@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
+  <circle cx="28" cy="28" r="28" fill="#0B7A5A"/>
+  <path d="M16 34 L28 14 L40 34Z" fill="#fff"/>
+  <circle cx="28" cy="30" r="5" fill="#0B7A5A"/>
+  <text x="28" y="46" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="8" font-weight="700">VINMEC</text>
+</svg>
