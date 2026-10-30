@@ -11,6 +11,16 @@ const beVietnam = Be_Vietnam_Pro({
 export const metadata: Metadata = {
   title: "YSalus | Appointments",
   description: "Book appointments at clinics and hospitals with YSalus",
+  icons: {
+    icon: [
+      {
+        url: "https://ysalus.io/logos/ysalus_full.png",
+        type: "image/png",
+      },
+    ],
+    shortcut: "https://ysalus.io/logos/ysalus_full.png",
+    apple: "https://ysalus.io/logos/ysalus_full.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

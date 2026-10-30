@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Clinic, Doctor } from "@/lib/data";
 import {
   IconBag,
@@ -15,6 +16,7 @@ type BookingDoctorCardProps = {
   doctor: Doctor;
   clinic: Clinic;
   highlighted?: boolean;
+  selectedDate?: string;
 };
 
 const badgeIcon = {
@@ -39,9 +41,12 @@ export function BookingDoctorCard({
   doctor,
   clinic,
   highlighted = false,
+  selectedDate = "",
 }: BookingDoctorCardProps) {
+  const router = useRouter();
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [isSlotsOpen, setIsSlotsOpen] = useState(false);
+  const [slotError, setSlotError] = useState(false);
   const titleId = useId();
   const BadgeIcon = badgeIcon[doctor.badge];
   const { morning, afternoon } = groupSlots(doctor.allSlots);
@@ -65,7 +70,22 @@ export function BookingDoctorCard({
 
   const selectSlot = (slot: string) => {
     setSelectedSlot(slot);
+    setSlotError(false);
     setIsSlotsOpen(false);
+  };
+
+  const goToForm = (slot?: string | null) => {
+    const time = slot ?? selectedSlot;
+    if (!time) {
+      setSlotError(true);
+      return;
+    }
+
+    const query = new URLSearchParams({ slot: time });
+    if (selectedDate) {
+      query.set("date", selectedDate);
+    }
+    router.push(`/book/${clinic.id}/${doctor.id}/form?${query.toString()}`);
   };
 
   return (
@@ -100,7 +120,11 @@ export function BookingDoctorCard({
             <span className="doctor-badge" aria-hidden>
               <BadgeIcon />
             </span>
-            <button type="button" className="book-btn">
+            <button
+              type="button"
+              className="book-btn"
+              onClick={() => goToForm()}
+            >
               Book Appointment
             </button>
           </div>
@@ -119,7 +143,10 @@ export function BookingDoctorCard({
                 key={slot}
                 type="button"
                 className={`slot-btn${selectedSlot === slot ? " is-selected" : ""}`}
-                onClick={() => setSelectedSlot(slot)}
+                onClick={() => {
+                  setSelectedSlot(slot);
+                  setSlotError(false);
+                }}
               >
                 {slot}
               </button>
@@ -133,6 +160,10 @@ export function BookingDoctorCard({
             </button>
           </div>
         </div>
+
+        {slotError ? (
+          <p className="slot-error">Please select a time slot first.</p>
+        ) : null}
       </article>
 
       {isSlotsOpen ? (
@@ -213,9 +244,9 @@ export function BookingDoctorCard({
                 type="button"
                 className="book-btn"
                 disabled={!selectedSlot}
-                onClick={() => setIsSlotsOpen(false)}
+                onClick={() => goToForm()}
               >
-                {selectedSlot ? `Confirm ${selectedSlot}` : "Select a slot"}
+                {selectedSlot ? `Book ${selectedSlot}` : "Select a slot"}
               </button>
             </div>
           </div>

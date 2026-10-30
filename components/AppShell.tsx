@@ -16,45 +16,64 @@ import {
 } from "./icons";
 
 const navItems = [
-  { icon: IconGrid, label: "Dashboard" },
-  { icon: IconFolder, label: "Records" },
-  { icon: IconUsers, label: "Patients" },
-  { icon: IconCalendar, label: "Appointments", active: true },
-  { icon: IconMessage, label: "Messages" },
-  { icon: IconDocument, label: "Documents" },
-  { icon: IconChart, label: "Reports" },
-  { icon: IconSettings, label: "Settings" },
+  { icon: IconGrid, label: "Dashboard", href: "/" },
+  { icon: IconFolder, label: "Records", href: "/" },
+  { icon: IconUsers, label: "Patients", href: "/" },
+  { icon: IconCalendar, label: "Appointments", href: "/calendar" },
+  { icon: IconMessage, label: "Messages", href: "/" },
+  { icon: IconDocument, label: "Documents", href: "/" },
+  { icon: IconChart, label: "Reports", href: "/" },
+  { icon: IconSettings, label: "Settings", href: "/" },
 ];
 
 type AppShellProps = {
   children: React.ReactNode;
   backHref?: string;
   showFooter?: boolean;
+  plainContent?: boolean;
+  title?: string;
+  searchPlaceholder?: string;
+  showBack?: boolean;
+  activeNav?: string;
 };
 
 export function AppShell({
   children,
   backHref = "/",
   showFooter = false,
+  plainContent = false,
+  title = "Set A New Appointment",
+  searchPlaceholder = "Search",
+  showBack = true,
+  activeNav = "Appointments",
 }: AppShellProps) {
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <Link href="/" className="brand" aria-label="YSalus home">
-          <span className="brand-mark">Y</span>
+          <img
+            className="brand-logo"
+            src="https://ysalus.io/logos/ysalus_full.png"
+            alt="YSalus"
+            width={48}
+            height={48}
+          />
         </Link>
         <nav className="sidebar-nav" aria-label="Main">
-          {navItems.map(({ icon: Icon, label, active }) => (
-            <button
-              key={label}
-              type="button"
-              className={`nav-btn${active ? " is-active" : ""}`}
-              aria-label={label}
-              aria-current={active ? "page" : undefined}
-            >
-              <Icon />
-            </button>
-          ))}
+          {navItems.map(({ icon: Icon, label, href }) => {
+            const active = label === activeNav;
+            return (
+              <Link
+                key={label}
+                href={href}
+                className={`nav-btn${active ? " is-active" : ""}`}
+                aria-label={label}
+                aria-current={active ? "page" : undefined}
+              >
+                <Icon />
+              </Link>
+            );
+          })}
         </nav>
         <button type="button" className="nav-btn sidebar-help" aria-label="Help">
           <IconHelp />
@@ -64,19 +83,28 @@ export function AppShell({
       <div className="main-area">
         <header className="topbar">
           <div className="topbar-left">
-            <Link href={backHref} className="back-btn" aria-label="Go back">
-              <IconBack />
-            </Link>
+            {showBack ? (
+              <Link href={backHref} className="back-btn" aria-label="Go back">
+                <IconBack />
+              </Link>
+            ) : null}
             <div>
-              <h1 className="page-title">Set A New Appointment</h1>
-              <p className="breadcrumbs">Details &gt; Details &gt; Details</p>
+              <h1 className="page-title">{title}</h1>
+              {showBack ? (
+                <p className="breadcrumbs">Details &gt; Details &gt; Details</p>
+              ) : null}
             </div>
           </div>
 
           <div className="topbar-right">
             <label className="search-field">
               <IconSearch className="search-icon" />
-              <input type="search" placeholder="Search" aria-label="Search" />
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                aria-label={searchPlaceholder}
+                autoComplete="off"
+              />
             </label>
             <button type="button" className="icon-round" aria-label="Notifications">
               <IconBell />
@@ -92,7 +120,9 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="content-panel">{children}</main>
+        <main className={plainContent ? "content-plain" : "content-panel"}>
+          {children}
+        </main>
 
         {showFooter ? (
           <footer className="app-footer">© 2025 YSalus All rights reserved.</footer>

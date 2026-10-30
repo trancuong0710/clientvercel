@@ -30,6 +30,12 @@ export type Doctor = {
   allSlots: string[];
   badge: DoctorBadge;
   clinicId: string;
+  experienceYears: number;
+  consultations: number;
+  conditions: string[];
+  role: string;
+  rolePeriod: string;
+  languages: string[];
 };
 
 export const clinics: Clinic[] = [
@@ -44,7 +50,8 @@ export const clinics: Clinic[] = [
     price: "40,000đ",
     logoInitials: "CR",
     logoColor: "#1B6CA8",
-    logoSrc: "/logos/cho-ray.svg",
+    logoSrc:
+      "https://vgec2022.vfde.vn/wp-content/uploads/sites/11/2022/07/LogoBVCR2016_300px_1S.png",
     establishedYears: 5,
     staffCount: 30,
     address: "201B Nguyen Chi Thanh St., District 5, Ho Chi Minh City, Vietnam",
@@ -60,7 +67,8 @@ export const clinics: Clinic[] = [
     price: "42,100đ",
     logoInitials: "GD",
     logoColor: "#2B6CB0",
-    logoSrc: "/logos/gia-dinh.svg",
+    logoSrc:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAT3BYGEOy8a7On5xSNsBUQg2VMOlVk7edxZMriI40JQ&s=10",
     establishedYears: 8,
     staffCount: 30,
     address: "1 No Trang Long St., Binh Thanh District, Ho Chi Minh City, Vietnam",
@@ -76,7 +84,8 @@ export const clinics: Clinic[] = [
     price: "512,000đ",
     logoInitials: "VM",
     logoColor: "#0B7A5A",
-    logoSrc: "/logos/vinmec.svg",
+    logoSrc:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREV-Hdr-0011K10thXRZw7bIvPaTFhreQ2abkmBTCAmLICpOrFXnawsB8&s=10",
     establishedYears: 10,
     staffCount: 30,
     address: "208 Nguyen Huu Canh St., Binh Thanh District, Ho Chi Minh City, Vietnam",
@@ -92,7 +101,8 @@ export const clinics: Clinic[] = [
     price: "120,000đ",
     logoInitials: "115",
     logoColor: "#C53030",
-    logoSrc: "/logos/115.svg",
+    logoSrc:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCC_wys3n_H1JInMf-TzZ9zBNeLRP8cVI1WsqheZt-UQUwqXf4NhYnG_6H&s=10",
     establishedYears: 12,
     staffCount: 30,
     address: "527 Su Van Hanh St., District 10, Ho Chi Minh City, Vietnam",
@@ -124,7 +134,8 @@ export const clinics: Clinic[] = [
     price: "890,000đ",
     logoInitials: "UMP",
     logoColor: "#1A365D",
-    logoSrc: "/logos/ump.svg",
+    logoSrc:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ-yfTz-vi1irdAL-kmaK19gOzxnacSywLpPvQ70A36yjJOaaO_mJPiw0&s=10",
     establishedYears: 15,
     staffCount: 30,
     address: "217 Hong Bang St., District 5, Ho Chi Minh City, Vietnam",
@@ -156,7 +167,8 @@ export const clinics: Clinic[] = [
     price: "150,000đ",
     logoInitials: "SG",
     logoColor: "#3182CE",
-    logoSrc: "/logos/saigon.svg",
+    logoSrc:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmzh0KuSjOjmQCWRYiWJReNfQc5sOCN7cHs7ByVWXLJYGlm2-xOhCfJkok&s=10",
     establishedYears: 6,
     staffCount: 30,
     address: "125 Le Loi St., District 1, Ho Chi Minh City, Vietnam",
@@ -348,6 +360,21 @@ function buildAllSlots(seed: number, index: number) {
   return all.length >= 6 ? all : [...morningSlots.slice(0, 4), ...afternoonSlots.slice(0, 4)];
 }
 
+const conditionPools = [
+  ["CARDIOVASCULAR DISEASE", "ASTHMA", "ATRIAL FIBRILLATION", "HYPERTENSION"],
+  ["DIABETES", "THYROID DISORDER", "OBESITY", "METABOLIC SYNDROME"],
+  ["MIGRAINE", "EPILEPSY", "STROKE", "PARKINSON"],
+  ["GASTRITIS", "IBS", "HEPATITIS", "ULCER"],
+  ["DERMATITIS", "PSORIASIS", "ACNE", "ECZEMA"],
+];
+
+const rolePools = [
+  "Head of Department",
+  "Senior Consultant",
+  "Attending Physician",
+  "Specialist Doctor",
+];
+
 export function getDoctorsForClinic(clinicId: string): Doctor[] {
   const clinicIndex = clinics.findIndex((clinic) => clinic.id === clinicId);
   const seed = clinicIndex * 1009 + 41;
@@ -371,6 +398,8 @@ export function getDoctorsForClinic(clinicId: string): Doctor[] {
     const priceValue = Math.round((150 + rand() * 700) / 5) * 1000;
     const avatarImg = ((clinicIndex * 30 + index) % 70) + 1;
     const allSlots = buildAllSlots(seed, index);
+    const experienceYears = 3 + Math.floor(rand() * 18);
+    const startYear = 2026 - experienceYears;
 
     return {
       id: `${clinicId}-${index + 1}`,
@@ -385,6 +414,12 @@ export function getDoctorsForClinic(clinicId: string): Doctor[] {
       allSlots,
       badge: badges[(index + clinicIndex) % badges.length],
       clinicId,
+      experienceYears,
+      consultations: 12 + Math.floor(rand() * 40),
+      conditions: conditionPools[(index + clinicIndex) % conditionPools.length],
+      role: rolePools[(index + clinicIndex) % rolePools.length],
+      rolePeriod: `${startYear} - now`,
+      languages: index % 3 === 0 ? ["VIETNAMESE", "ENGLISH", "FRENCH"] : ["VIETNAMESE", "ENGLISH"],
     };
   });
 }
